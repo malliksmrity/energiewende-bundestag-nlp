@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+.ipynb_checkpoints/
+.DS_Store
+Thumbs.db
+.vscode/
+# raw speech cache is re-created by src/energiewende_pipeline.py
+data/energy_speeches.csv
