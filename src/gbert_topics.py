@@ -34,21 +34,41 @@ def tokens(text):
     return [w for w in re.findall(r"[a-zäöüß]{3,}", text.lower()) if w not in STOP]
 
 
+def embed(model_name, docs):
+    """Sentence embeddings. deepset/gbert-base has no model_type in its config, so it is loaded
+    explicitly as a BERT model and mean-pooled (first 256 tokens of each speech)."""
+    if not model_name.startswith("deepset/"):
+        from sentence_transformers import SentenceTransformer
+        return SentenceTransformer(model_name).encode(docs, show_progress_bar=False)
+    import torch
+    from transformers import BertConfig, BertModel, BertTokenizerFast
+    torch.manual_seed(SEED)
+    tok = BertTokenizerFast.from_pretrained(model_name)
+    model = BertModel.from_pretrained(model_name, config=BertConfig.from_pretrained(model_name)).eval()
+    out = []
+    with torch.no_grad():
+        for i in range(0, len(docs), 16):
+            b = tok(docs[i:i + 16], padding=True, truncation=True, max_length=256, return_tensors="pt")
+            h = model(**b).last_hidden_state
+            m = b["attention_mask"].unsqueeze(-1)
+            out.append(((h * m).sum(1) / m.sum(1)).numpy())
+    return np.vstack(out)
+
+
 def run(model_name, docs, toks):
     from bertopic import BERTopic
     from gensim.corpora import Dictionary
     from gensim.models import CoherenceModel
     from hdbscan import HDBSCAN
-    from sentence_transformers import SentenceTransformer
     from sklearn.feature_extraction.text import CountVectorizer
     from umap import UMAP
 
-    emb = SentenceTransformer(model_name).encode(docs, show_progress_bar=False)
+    emb = embed(model_name, docs)
     topic_model = BERTopic(
         embedding_model=None,
         umap_model=UMAP(n_neighbors=15, n_components=5, min_dist=0.0, metric="cosine", random_state=SEED),
         hdbscan_model=HDBSCAN(min_cluster_size=15, metric="euclidean", cluster_selection_method="eom"),
-        vectorizer_model=CountVectorizer(tokenizer=tokens, lowercase=False, ngram_range=(1, 1), min_df=3, token_pattern=None),
+        vectorizer_model=CountVectorizer(tokenizer=tokens, lowercase=False, ngram_range=(1, 1), min_df=1, token_pattern=None),
         calculate_probabilities=False)
     labels, _ = topic_model.fit_transform(docs, emb)
     labels = np.array(labels)

@@ -50,6 +50,17 @@ Party prediction (six parties, 1,158 speeches with a party label and at least 20
 
 From the executed notebook (not recomputed by the script): LDA coherence c_v 0.374, BERTopic 0.397. BERTopic assigned 421 of 1,191 documents to its "no topic" bucket.
 
+**German embeddings test (`python src/gbert_topics.py`, `reports/gbert_topics.json`)**
+
+Same speeches, same UMAP and HDBSCAN settings, same tokenizer and coherence measure. Only the embedding changes:
+
+| Embedding | Topics found | Speeches without a topic | c_v coherence |
+|---|---|---|---|
+| paraphrase-multilingual-MiniLM-L12-v2 (notebook's choice) | 12 | 34.5 % | 0.523 |
+| deepset/gbert-base, mean-pooled | 2 | 0 % | 0.614 |
+
+How to read this: GBERT has the higher coherence score, but it produced only two topics. One is made of generic words ("eine", "Deutschland", "Euro") and one of procedural words ("Drucksache", "Ausschuss", "Beschlussempfehlung"). That is not a better topic model, it is a score on very few, very general topics. GBERT is a plain language model, not trained to compare sentences, so this is plausible. The multilingual sentence model gives topics you can actually tell apart. A German sentence-embedding model would be a fairer next test. These coherence values use a simpler tokenizer than the notebook's, so they are not comparable with the notebook's 0.397.
+
 ## Limitations
 
 - A sample of sessions, and keywords decide what counts as an energy speech.
