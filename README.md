@@ -93,7 +93,7 @@ GBERT's higher score is misleading: its two topics are generic words ("eine", "D
 | What | How | Status |
 |---|---|---|
 | Static page | GitHub Pages, folder `/docs` | needs enabling |
-| Live app | none yet (the data download takes about 60 MB at start-up) | backlog in `PROCESS.md` |
+| Live app | static Hugging Face Space: the entity finder and the party model run in the browser (`nlp_space/`; the exported model was checked against Python: largest probability difference 0.000015, same top party on all 8 test texts) | https://huggingface.co/spaces/malliksmrity/energiewende-speech-analyzer |
 | CI | `.github/workflows/ci.yml` compiles the code on every push | written, not yet run on GitHub |
 
 ## Coursework and extensions
