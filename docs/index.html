@@ -25,6 +25,10 @@
     <figcaption><b>Chart 1.</b> Share of energy speeches that contain at least one word from each group, by legislative period (17: 2009 to 2013, 18: 2013 to 2017, 19: 2017 to 2021). Words are matched as plain text, so a speech against nuclear power counts the same as one for it.</figcaption>
   </figure>
 
+  <h3 style="font-family:Georgia,serif">Are the changes real?</h3>
+  <p class="note">Speeches from the same session are not independent, so whole sessions were resampled 1,000 times to get a 95 percent range for the change from period 17 to period 19, in percentage points.</p>
+  <div class="tablewrap"><table id="citbl"><thead><tr><th>Theme</th><th>Change</th><th>95% range</th><th>Clear?</th></tr></thead><tbody></tbody></table></div>
+
   <figure>
     <div class="box"><canvas id="c2" role="img" aria-label="Bar chart of accuracy of a party classifier against a baseline for three test set-ups"></canvas></div>
     <figcaption><b>Chart 2.</b> Can the words of a speech tell which party the speaker belongs to? Six parties, so guessing the largest party gives about one third. The model gets about half, whichever way it is tested. That is better than guessing, and far from reliable.</figcaption>
@@ -78,6 +82,13 @@
     data: { labels: ['17 (2009-13)', '18 (2013-17)', '19 (2017-21)'],
             datasets: names.map(function (n, i) { return { label: n, data: periods.map(function (p) { return +(D.trend_share_of_speeches[n][p] * 100).toFixed(1); }), borderColor: colors[i], backgroundColor: colors[i], borderDash: dashes[i], borderWidth: 2, pointRadius: 4, tension: 0 }; }) },
     options: Object.assign({ plugins: { legend: { labels: { boxWidth: 24, font: { size: 11 } } } }, scales: { y: { beginAtZero: true, title: { display: true, text: 'Speeches mentioning the group (%)' } } } }, opts) });
+
+  var ctb = document.querySelector('#citbl tbody'), TC = D.trend_change_ci_session_bootstrap;
+  Object.keys(TC).forEach(function (k) {
+    var r = TC[k], tr = document.createElement('tr');
+    [k, (r.change_19_minus_17_points > 0 ? '+' : '') + r.change_19_minus_17_points, r.ci95_points[0] + ' to ' + r.ci95_points[1], r.clear ? 'yes' : 'no (range includes 0)'].forEach(function (v) { var td = document.createElement('td'); td.textContent = v; tr.appendChild(td); });
+    ctb.appendChild(tr);
+  });
 
   var C = D.classification;
   new Chart(document.getElementById('c2'), { type: 'bar',

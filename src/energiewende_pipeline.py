@@ -99,6 +99,29 @@ def main():
                      for p in PERIODS} for label, words in TREND_TERMS.items()}
     per_period = df.period.value_counts().sort_index().to_dict()
 
+    # uncertainty of the trend: speeches inside one session are not independent, so resample whole sessions
+    rng = np.random.default_rng(SEED)
+    n_by = {p: df[df.period == p].groupby("session").size() for p in PERIODS}  # speeches per session
+
+    def hits_by(label, p):
+        h = low[df.period == p].apply(lambda t: any(x in t for x in TREND_TERMS[label]))
+        return h.groupby(df.loc[h.index, "session"]).sum()
+
+    trend_ci = {}
+    for label in TREND_TERMS:
+        h17, h19 = hits_by(label, "17"), hits_by(label, "19")
+        diffs = []
+        for _ in range(1000):
+            s17 = rng.choice(n_by["17"].index.to_numpy(), len(n_by["17"]))
+            s19 = rng.choice(n_by["19"].index.to_numpy(), len(n_by["19"]))
+            a = h17.reindex(s17).fillna(0).sum() / n_by["17"].reindex(s17).sum()
+            b = h19.reindex(s19).fillna(0).sum() / n_by["19"].reindex(s19).sum()
+            diffs.append(b - a)
+        d0 = trend[label]["19"] - trend[label]["17"]
+        lo, hi = np.nanpercentile(diffs, [2.5, 97.5])
+        trend_ci[label] = {"change_19_minus_17_points": round(d0 * 100, 1), "ci95_points": [round(float(lo) * 100, 1), round(float(hi) * 100, 1)],
+                           "clear": bool(lo > 0 or hi < 0)}
+
     d = df[~df.party.isin(["NA"])].copy()
     keep = d.party.value_counts()
     d = d[d.party.isin(keep[keep >= 20].index)]
@@ -116,7 +139,7 @@ def main():
     res.append(evaluate(past, future, "Train periods 17 and 18, test period 19"))
 
     out = {"n_speeches": int(len(df)), "per_period": per_period, "parties_used": parties,
-           "classification": res, "trend_share_of_speeches": trend,
+           "classification": res, "trend_share_of_speeches": trend, "trend_change_ci_session_bootstrap": trend_ci,
            "notebook_reported": {"lda_c_v": 0.374, "bertopic_c_v": 0.397, "party_accuracy": 0.496, "party_macro_f1": 0.434,
                                  "note": "from the executed notebook; BERTopic and LDA are not re-run by this script"}}
     (ROOT / "reports").mkdir(exist_ok=True)
