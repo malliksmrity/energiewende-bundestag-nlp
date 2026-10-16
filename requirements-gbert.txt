@@ -1,0 +1,9 @@
+# For src/gbert_topics.py. Large (PyTorch, transformers). About 3 GB with the two model downloads.
+# Exact versions are not pinned yet: after the first successful run, replace these lines with `pip freeze` output.
+-r requirements.txt
+torch
+sentence-transformers
+bertopic
+umap-learn
+hdbscan
+gensim

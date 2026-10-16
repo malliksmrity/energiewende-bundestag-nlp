@@ -1,0 +1,11 @@
+# Extra packages for notebooks/energiewende_discourse_analysis.ipynb (LDA, BERTopic, spaCy).
+# The notebook was run on Google Colab and the exact versions were not recorded.
+# After your first successful run, replace these lines with `pip freeze` output.
+-r requirements.txt
+requests
+matplotlib
+spacy
+gensim==4.4.0
+bertopic
+sentence-transformers
+# then: python -m spacy download de_core_news_sm

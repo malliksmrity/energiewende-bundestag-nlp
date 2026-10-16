@@ -1,0 +1,163 @@
+{
+  "n_speeches": 1161,
+  "seed": 42,
+  "results": [
+    {
+      "model": "paraphrase-multilingual-MiniLM-L12-v2",
+      "n_topics": 12,
+      "outlier_share": 0.345,
+      "coherence_c_v": 0.523,
+      "topics": {
+        "0": [
+          "ein",
+          "klimaschutz",
+          "eine",
+          "mssen",
+          "einen",
+          "knnen",
+          "deutschland",
+          "denn"
+        ],
+        "1": [
+          "eine",
+          "ein",
+          "ber",
+          "frage",
+          "einen",
+          "heute",
+          "einer",
+          "konsens"
+        ],
+        "2": [
+          "ein",
+          "eine",
+          "mssen",
+          "ber",
+          "einen",
+          "knnen",
+          "menschen",
+          "deutschland"
+        ],
+        "3": [
+          "energien",
+          "ein",
+          "eine",
+          "energiewende",
+          "erneuerbaren",
+          "einen",
+          "energieeffizienz",
+          "mssen"
+        ],
+        "4": [
+          "euro",
+          "eine",
+          "haushalt",
+          "ein",
+          "milliarden",
+          "millionen",
+          "mssen",
+          "einen"
+        ],
+        "5": [
+          "beschlussempfehlung",
+          "ausschuss",
+          "drucksache",
+          "wer",
+          "fraktion",
+          "stimmt",
+          "beratung",
+          "fraktionen"
+        ],
+        "6": [
+          "eine",
+          "deutschland",
+          "ein",
+          "energiewende",
+          "energien",
+          "einen",
+          "durch",
+          "erneuerbaren"
+        ],
+        "7": [
+          "eine",
+          "deutschland",
+          "klimaschutz",
+          "ein",
+          "mssen",
+          "prozent",
+          "einen",
+          "knnen"
+        ],
+        "8": [
+          "europa",
+          "eine",
+          "ein",
+          "deutschland",
+          "europischen",
+          "mssen",
+          "union",
+          "menschen"
+        ],
+        "9": [
+          "deutschland",
+          "eine",
+          "ein",
+          "wachstum",
+          "wirtschaft",
+          "jahr",
+          "menschen",
+          "prozent"
+        ],
+        "10": [
+          "eeg",
+          "erneuerbaren",
+          "energien",
+          "mssen",
+          "eine",
+          "ein",
+          "ausbau",
+          "knnen"
+        ],
+        "11": [
+          "wald",
+          "nachhaltigkeit",
+          "wlder",
+          "holz",
+          "eine",
+          "ein",
+          "beirat",
+          "waldbesitzer"
+        ]
+      }
+    },
+    {
+      "model": "deepset/gbert-base",
+      "n_topics": 2,
+      "outlier_share": 0.0,
+      "coherence_c_v": 0.614,
+      "topics": {
+        "0": [
+          "eine",
+          "ein",
+          "mssen",
+          "einen",
+          "deutschland",
+          "knnen",
+          "ber",
+          "euro"
+        ],
+        "1": [
+          "drucksache",
+          "ausschuss",
+          "beschlussempfehlung",
+          "wer",
+          "fraktion",
+          "abgeordneten",
+          "stimmt",
+          "beratung"
+        ]
+      }
+    }
+  ],
+  "note": "same UMAP, HDBSCAN, tokenizer and coherence measure for both models; only the embedding differs"
+}

@@ -1,0 +1,112 @@
+{
+  "speeches": 1161,
+  "model": "de_core_news_sm + EntityRuler (prefix match), saved to models/energiewende_de",
+  "mentions_by_method": {
+    "ruler_prefix_match": 3337,
+    "exact_lemma_match_like_the_notebook": 2315,
+    "plain_substring_count": 3417
+  },
+  "mentions_per_term_ruler": {
+    "klimaschutz": 1366,
+    "energiewende": 664,
+    "atomkraft": 252,
+    "kernenergie": 155,
+    "steinkohle": 136,
+    "wasserstoff": 110,
+    "photovoltaik": 110,
+    "atomausstieg": 108,
+    "braunkohle": 108,
+    "versorgungssicherheit": 108,
+    "windenergie": 73,
+    "kohleausstieg": 71,
+    "windkraft": 53,
+    "solarenergie": 23
+  },
+  "mentions_per_period_ruler": {
+    "17": {
+      "klimaschutz": 397,
+      "energiewende": 218,
+      "steinkohle": 107,
+      "kernenergie": 96,
+      "atomkraft": 82,
+      "photovoltaik": 67,
+      "atomausstieg": 35,
+      "versorgungssicherheit": 24,
+      "windkraft": 23,
+      "windenergie": 13,
+      "solarenergie": 11,
+      "braunkohle": 10,
+      "kohleausstieg": 8,
+      "wasserstoff": 6
+    },
+    "18": {
+      "klimaschutz": 486,
+      "energiewende": 347,
+      "atomkraft": 134,
+      "braunkohle": 81,
+      "versorgungssicherheit": 63,
+      "atomausstieg": 52,
+      "kernenergie": 47,
+      "kohleausstieg": 31,
+      "photovoltaik": 27,
+      "windenergie": 26,
+      "steinkohle": 23,
+      "windkraft": 12,
+      "solarenergie": 7,
+      "wasserstoff": 4
+    },
+    "19": {
+      "klimaschutz": 483,
+      "wasserstoff": 100,
+      "energiewende": 99,
+      "atomkraft": 36,
+      "windenergie": 34,
+      "kohleausstieg": 32,
+      "atomausstieg": 21,
+      "versorgungssicherheit": 21,
+      "windkraft": 18,
+      "braunkohle": 17,
+      "photovoltaik": 16,
+      "kernenergie": 12,
+      "steinkohle": 6,
+      "solarenergie": 5
+    }
+  },
+  "top_compound_forms_found": {
+    "klimaschutzziele": 82,
+    "atomkraftwerke": 79,
+    "klimaschutzgesetz": 77,
+    "klimaschutzes": 66,
+    "klimaschutzpolitik": 44,
+    "atomkraftwerken": 43,
+    "klimaschutzplan": 25,
+    "klimaschutzinitiative": 23,
+    "steinkohlebergbau": 20,
+    "klimaschutzabkommen": 17,
+    "atomkraftwerk": 17,
+    "kohleausstiegsgesetz": 16,
+    "klimaschutzzielen": 15,
+    "klimaschutzziel": 14,
+    "windkraftanlagen": 13
+  },
+  "example_sentences_with_compounds": {
+    "klimaschutz": "Interfraktionell ist vereinbart worden, die verbundene Tagesordnung um die in der Zusatzpunktliste aufgeführten Punkte zu erweitern: ZP 1 Aktuelle Stunde auf Ve",
+    "windkraft": "Dafür wären 3,8 Millionen Windkrafträder notwendig.",
+    "wasserstoff": "Auf der Internationalen Automobilausstellung im vergangenen Jahr drehte sich fast alles um Elektroautos, Hybridfahrzeuge und Wasserstofftechnologien.",
+    "kernenergie": "D) Es gibt einen weiteren Punkt, der in etwa zeitgleich mit dem Erneuerbare-Energien-Gesetz entschieden wurde und der ebenfalls erheblichen Einfluss hatte auf d",
+    "atomkraft": "Ich sage Ihnen: Die Neinsager von damals setzen heute auf die Laufzeitverlängerung von Atomkraftwerken.",
+    "atomausstieg": "Nach der Art und Weise, wie Sie den Komplex des Atomausstieges, der von Rot-Grün verhandelt und vereinbart worden ist, behandeln, scheint er ein Super-GAU für d",
+    "photovoltaik": "Ich nenne Ihnen die für 2010 prognostizierten Zahlen, nachdem wir erst dieses Jahr die Kürzung beschlossen haben: Bis 2009 einschließlich wurde eine Kapazität v",
+    "braunkohle": "Da gibt es noch die Sanierung der alten Braunkohlestandorte im ehemaligen DDR-Gebiet.",
+    "windenergie": "Das heißt, allein in der Windenergiebranche und bei den Zuliefererbetrieben wird es massive Arbeitsplatzverluste und Konkurse geben.",
+    "steinkohle": "Ich rufe die Tagesordnungspunkt 24 a und 24 b auf: a) Beratung der Beschlussempfehlung und des Berichts des Ausschusses für Wirtschaft und Technologie (9. Aussc",
+    "energiewende": "Nein, Herr Rösler, das nenne ich Energiewendeversager.",
+    "kohleausstieg": "Tagesordnungspunkte 29 a und 29 b: a) Beratung des Antrags der Abgeordneten Eva Bulling-Schröter, Ralph Lenkert, Sabine Stüber, weiterer Abgeordneter und der Fr",
+    "versorgungssicherheit": "Noch im Herbst des letzten Jahres hat die Bundesnetzagentur auf die äußerst angespannte Versorgungssicherheitslage im Februar 2012 hingewiesen und dabei die wic"
+  },
+  "limits": [
+    "a gazetteer finds only listed words",
+    "prefix matching can over-match words that merely start with a term",
+    "no for/against distinction"
+  ]
+}
