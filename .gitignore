@@ -9,3 +9,4 @@ Thumbs.db
 .vscode/
 # raw speech cache is re-created by src/energiewende_pipeline.py
 data/energy_speeches.csv
+models/

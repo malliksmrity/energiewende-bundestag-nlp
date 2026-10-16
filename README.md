@@ -50,7 +50,7 @@ Share of energy speeches mentioning each theme, with the change from period 17 t
 | Topics | BERTopic with `paraphrase-multilingual-MiniLM-L12-v2`, UMAP, HDBSCAN | meaning-based topics, works for German |
 | Topics (test) | BERTopic with `deepset/gbert-base` (German BERT, mean-pooled) | does a German-only model do better? |
 | Party prediction | TF-IDF (1 and 2 word groups) + logistic regression, class weights | simple, explainable baseline |
-| Entities | dictionary of 14 energy terms | transparent, closed vocabulary |
+| Entities | spaCy German pipeline (de_core_news_sm) + EntityRuler with the 14-term energy word list, prefix matching (src/spacy_energy_pipeline.py) | transparent, closed vocabulary, finds German compounds |
 
 Evaluation:
 
@@ -66,6 +66,12 @@ Evaluation:
 | GBERT (German BERT) | 2 | 0 % | 0.614 |
 
 GBERT's higher score is misleading: its two topics are generic words ("eine", "Deutschland", "Euro") and procedural words ("Drucksache", "Ausschuss"). GBERT is a plain language model, not trained to compare sentences. A German sentence-embedding model is the fairer next test. These coherence values use a simpler tokenizer than the notebook's (LDA 0.374, BERTopic 0.397 there), so the two sets are not comparable.
+
+**NLP tooling and what I did not use**
+
+- **spaCy:** used for the production-style entity pipeline. It finds **3,337 energy mentions** in the 1,161 speeches, against 2,315 with the notebook's exact-lemma method, because it also catches compounds (Klimaschutzziele 82, Atomkraftwerke 79, Klimaschutzgesetz 77, Windkraftanlagen 13). The pipeline can be saved and packaged (python -m spacy package). It is a word list, so it cannot tell support from opposition.
+- **Hugging Face:** used through BERTopic's sentence models and GBERT (Transformers). The text-generation serving tool TGI is for large language models and is not needed here.
+- **Spark NLP:** not used. It is built for clusters on big data; 1,161 speeches fit in memory on a laptop.
 
 ## 6. Technical documentation
 

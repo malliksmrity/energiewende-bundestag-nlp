@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Energiewende speech analyzer | German NLP in your browser</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  textarea { width: 100%; min-height: 150px; padding: 10px; font: inherit; background: var(--card); color: var(--text); border: 1px solid var(--line); border-radius: 4px; }
+  mark { padding: 0 3px; border-radius: 3px; color: #04181c; }
+  mark.TECHNOLOGY { background: #6fd3e1; } mark.POLICY { background: #f0b84a; }
+  .chips span { display: inline-block; margin: 2px 6px 2px 0; padding: 2px 10px; border: 1px solid var(--line); border-radius: 999px; font-size: 14px; }
+  select { max-width: 100%; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar"><span>Smrity Mallik &middot; NLP demo</span><a href="https://github.com/malliksmrity/energiewende-bundestag-nlp" target="_blank" rel="noopener">Code on GitHub</a></div>
+  <p class="kicker">German text analysis &middot; Bundestag energy debates</p>
+  <h1>Paste German text. See the energy terms and a guess of the party.</h1>
+  <p class="lead">Two small models from the Energiewende project run here, in your browser. Nothing is sent anywhere. The text never leaves your device.</p>
+  <p class="callout"><b>How far to trust it:</b> the term finder is a word list (it only finds words it knows, and cannot tell for from against). The party guess comes from word choice only and is right about half of the time on speeches it has not seen, against one third to one half for always naming the biggest party. It is a teaching demo. Do not use it to label real people.</p>
+  <noscript><p class="callout">This demo needs JavaScript.</p></noscript>
+
+  <h2>1. Your text</h2>
+  <label for="ex">Examples (written by me, not real quotes)</label>
+  <select id="ex"><option value="">Choose an example</option></select>
+  <textarea id="txt" aria-label="German text" placeholder="Zum Beispiel: Die Energiewende braucht mehr Windkraft und Photovoltaik, und der Kohleausstieg muss schneller kommen."></textarea>
+  <p><button id="go" class="btn">Analyse</button></p>
+
+  <h2>2. Energy terms found</h2>
+  <p id="stats" class="note"></p>
+  <div id="marked" style="line-height:1.9"></div>
+  <p class="chips" id="chips"></p>
+  <p class="note"><mark class="TECHNOLOGY">technology</mark> <mark class="POLICY">policy</mark> The list has 14 stems (for example windkraft, wasserstoff, atomkraft, klimaschutz). A stem also matches compounds that begin with it, like Windkraftanlagen or Klimaschutzgesetz. This is the same list as the spaCy pipeline in the repository, which found 3,337 mentions in the 1,161 speeches, against 2,315 for exact-word matching.</p>
+
+  <h2>3. A guess of the speaker's party</h2>
+  <figure><div class="box" style="height:260px"><canvas id="pc" role="img" aria-label="Probability for each party"></canvas></div>
+    <figcaption id="pcap">The bars are the model's probabilities for six parties. Short texts give weak, flat results.</figcaption></figure>
+  <p id="why" class="note"></p>
+  <h3 style="font-family:Georgia,serif">Words the model leans on, by party</h3>
+  <div class="tablewrap"><table id="top"><thead><tr><th>Party</th><th>Strongest word signals</th></tr></thead><tbody></tbody></table></div>
+
+  <footer>Data: GermaParl (PolMine project), Bundestag plenary protocols 2009 to 2021, CC BY-SA. Model: TF-IDF with logistic regression trained on 1,158 labelled energy speeches; held-out accuracy 0.50 (random split), 0.52 (whole sessions held out), 0.53 (train on older periods, test on the newest). Project page and code: <a href="https://github.com/malliksmrity/energiewende-bundestag-nlp" target="_blank" rel="noopener">github.com/malliksmrity/energiewende-bundestag-nlp</a>.</footer>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="party_model.js"></script>
+<script>
+(function () {
+  var M = window.PARTY, $ = function (id) { return document.getElementById(id); };
+  var css = getComputedStyle(document.documentElement), accent = css.getPropertyValue('--accent').trim(), grey = css.getPropertyValue('--grey').trim(), text = css.getPropertyValue('--text').trim(), line = css.getPropertyValue('--line').trim();
+  Chart.defaults.color = text; Chart.defaults.borderColor = line; Chart.defaults.font.family = '"Segoe UI", system-ui, sans-serif';
+  var GAZ = { windkraft: 'TECHNOLOGY', windenergie: 'TECHNOLOGY', photovoltaik: 'TECHNOLOGY', solarenergie: 'TECHNOLOGY', wasserstoff: 'TECHNOLOGY', braunkohle: 'TECHNOLOGY', steinkohle: 'TECHNOLOGY', atomkraft: 'TECHNOLOGY', kernenergie: 'TECHNOLOGY', energiewende: 'POLICY', kohleausstieg: 'POLICY', atomausstieg: 'POLICY', klimaschutz: 'POLICY', versorgungssicherheit: 'POLICY' };
+  var RE = new RegExp('(?<![\\p{L}])(' + Object.keys(GAZ).join('|') + ')\\p{L}*', 'giu');
+  var idx = {}; M.terms.forEach(function (t, i) { idx[t] = i; });
+  var proc = {}; M.procedural.forEach(function (w) { proc[w] = 1; });
+  var examples = { 'Pro Energiewende (Linke/Gruene-nahe Wortwahl)': 'Die Energiewende braucht mehr Windkraft und Photovoltaik, und der Kohleausstieg muss schneller kommen. Klimaschutz ist eine Frage der Gerechtigkeit.',
+    'Versorgungssicherheit und Preise': 'Wir brauchen Versorgungssicherheit und bezahlbare Strompreise. Die Atomkraft und die Kernenergie duerfen nicht aus ideologischen Gruenden abgeschaltet werden.',
+    'Wasserstoff und Industrie': 'Wasserstoff ist der Schluessel fuer die Industrie. Die Bundesregierung muss Planungssicherheit schaffen und die Forschung foerdern.' };
+  Object.keys(examples).forEach(function (k) { var o = document.createElement('option'); o.value = k; o.textContent = k; $('ex').appendChild(o); });
+  $('ex').onchange = function () { if (this.value) { $('txt').value = examples[this.value]; analyse(); } };
+  function esc(s) { return s.replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); }
+  function clean(t) { return (t.toLowerCase().match(/[a-zäöüß]{3,}/g) || []).filter(function (w) { return !proc[w]; }); }
+  function features(tokens) {
+    var c = {}; tokens.forEach(function (w, i) { if (w in idx) c[w] = (c[w] || 0) + 1; if (i > 0) { var b = tokens[i - 1] + ' ' + w; if (b in idx) c[b] = (c[b] || 0) + 1; } });
+    var v = {}, n = 0; Object.keys(c).forEach(function (k) { var x = c[k] * M.idf[idx[k]]; v[k] = x; n += x * x; }); n = Math.sqrt(n) || 1; Object.keys(v).forEach(function (k) { v[k] /= n; }); return v;
+  }
+  function predict(t) {
+    var f = features(clean(t)), z = M.intercept.slice(), contrib = M.classes.map(function () { return {}; });
+    Object.keys(f).forEach(function (k) { for (var c = 0; c < z.length; c++) { var d = f[k] * M.coef[c][idx[k]]; z[c] += d; contrib[c][k] = d; } });
+    var mx = Math.max.apply(null, z), e = z.map(function (v) { return Math.exp(v - mx); }), s = e.reduce(function (a, b) { return a + b; }, 0);
+    return { p: e.map(function (v) { return v / s; }), contrib: contrib, known: Object.keys(f).length };
+  }
+  var chart = null;
+  function analyse() {
+    var t = $('txt').value, html = '', last = 0, m, found = {}, n = 0; RE.lastIndex = 0;
+    while ((m = RE.exec(t)) !== null) { var stem = m[1].toLowerCase(); html += esc(t.slice(last, m.index)) + '<mark class="' + GAZ[stem] + '" title="' + GAZ[stem] + '">' + esc(m[0]) + '</mark>'; last = m.index + m[0].length; found[stem] = (found[stem] || 0) + 1; n++; }
+    html += esc(t.slice(last)); $('marked').innerHTML = html || '<span class="note">Paste or choose a text.</span>';
+    $('stats').textContent = n + ' energy mention' + (n === 1 ? '' : 's') + ' in ' + (t.trim() ? t.trim().split(/\s+/).length : 0) + ' words.';
+    $('chips').innerHTML = Object.keys(found).map(function (k) { return '<span>' + k + ' &times; ' + found[k] + '</span>'; }).join('');
+    var r = predict(t), best = r.p.indexOf(Math.max.apply(null, r.p));
+    if (chart) chart.destroy();
+    chart = new Chart($('pc'), { type: 'bar', data: { labels: M.classes, datasets: [{ data: r.p.map(function (v) { return +(v * 100).toFixed(1); }), backgroundColor: r.p.map(function (_, i) { return i === best ? accent : grey; }) }] },
+      options: { responsive: true, maintainAspectRatio: false, animation: false, plugins: { legend: { display: false } }, scales: { y: { min: 0, max: 100, title: { display: true, text: 'Probability (%)' } } } } });
+    var top = Object.keys(r.contrib[best]).sort(function (a, b) { return r.contrib[best][b] - r.contrib[best][a]; }).slice(0, 6);
+    $('why').textContent = r.known === 0 ? 'No word in this text is in the model vocabulary, so every party gets its base rate.' : 'Top guess: ' + M.classes[best] + ' (' + (r.p[best] * 100).toFixed(0) + ' %), from ' + r.known + ' known terms. Terms that pushed most toward it: ' + (top.length ? top.join(', ') : 'none') + '. A flat chart means the text says little about the party.';
+  }
+  $('go').onclick = analyse;
+  var tb = document.querySelector('#top tbody'); M.classes.forEach(function (c) { var tr = document.createElement('tr'), a = document.createElement('td'), b = document.createElement('td'); a.textContent = c; b.textContent = M.top_terms[c].slice(0, 10).join(', '); tr.appendChild(a); tr.appendChild(b); tb.appendChild(tr); });
+  window.__nlp = { predict: predict, clean: clean, M: M, analyse: analyse };
+})();
+</script>
+</body>
+</html>
