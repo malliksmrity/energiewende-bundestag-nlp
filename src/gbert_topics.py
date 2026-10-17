@@ -21,17 +21,18 @@ import pandas as pd
 
 SEED = 42
 ROOT = Path(__file__).resolve().parents[1]
-MODELS = ["paraphrase-multilingual-MiniLM-L12-v2", "deepset/gbert-base"]
+MODELS = ["paraphrase-multilingual-MiniLM-L12-v2", "deepset/gbert-base",
+          "deutsche-telekom/gbert-large-paraphrase-cosine"]  # the last one is a German model trained for sentence similarity
 STOP = set("""aber alle allem allen aller alles als also am an ander andere anderen auch auf aus bei bin bis bist da damit dann der den des dem die das dass
-daß du er es etwas euer eure für gegen gewesen hab habe haben hat hatte hatten hier hin hinter ich ihr ihre ihren im in indem ins ist jede jedem jeden jeder jedes jetzt kann
-kein keine keinen können könnte machen man manche mein meine mit muss musste nach nicht nichts noch nun nur ob oder ohne sehr sein seine seinen sich sie sind so solche soll sollte
-sondern sonst über um und uns unser unsere unter viel vom von vor während war waren warum was weil weiter welche wenn werde werden wie wieder will wir wird wirst wo wollen
-wollte würde würden zu zum zur zwar zwischen herr frau damen herren kollege kollegin präsident präsidentin beifall bundesregierung hat gibt geht gehen sagen sage ganz
+daÃƒÆ’Ã…Â¸ du er es etwas euer eure fÃƒÆ’Ã‚Â¼r gegen gewesen hab habe haben hat hatte hatten hier hin hinter ich ihr ihre ihren im in indem ins ist jede jedem jeden jeder jedes jetzt kann
+kein keine keinen kÃƒÆ’Ã‚Â¶nnen kÃƒÆ’Ã‚Â¶nnte machen man manche mein meine mit muss musste nach nicht nichts noch nun nur ob oder ohne sehr sein seine seinen sich sie sind so solche soll sollte
+sondern sonst ÃƒÆ’Ã‚Â¼ber um und uns unser unsere unter viel vom von vor wÃƒÆ’Ã‚Â¤hrend war waren warum was weil weiter welche wenn werde werden wie wieder will wir wird wirst wo wollen
+wollte wÃƒÆ’Ã‚Â¼rde wÃƒÆ’Ã‚Â¼rden zu zum zur zwar zwischen herr frau damen herren kollege kollegin prÃƒÆ’Ã‚Â¤sident prÃƒÆ’Ã‚Â¤sidentin beifall bundesregierung hat gibt geht gehen sagen sage ganz
 schon mehr immer ja nein dies diese diesem diesen dieser dieses wurde wurden worden sein""".split())
 
 
 def tokens(text):
-    return [w for w in re.findall(r"[a-zäöüß]{3,}", text.lower()) if w not in STOP]
+    return [w for w in re.findall(r"[a-zÃƒÆ’Ã‚Â¤ÃƒÆ’Ã‚Â¶ÃƒÆ’Ã‚Â¼ÃƒÆ’Ã…Â¸]{3,}", text.lower()) if w not in STOP]
 
 
 def embed(model_name, docs):
@@ -39,7 +40,9 @@ def embed(model_name, docs):
     explicitly as a BERT model and mean-pooled (first 256 tokens of each speech)."""
     if not model_name.startswith("deepset/"):
         from sentence_transformers import SentenceTransformer
-        return SentenceTransformer(model_name).encode(docs, show_progress_bar=False)
+        st = SentenceTransformer(model_name)
+        st.max_seq_length = min(256, st.max_seq_length or 256)  # speed: first 256 tokens of each speech, as for GBERT
+        return st.encode(docs, show_progress_bar=False, batch_size=16)
     import torch
     from transformers import BertConfig, BertModel, BertTokenizerFast
     torch.manual_seed(SEED)
@@ -83,7 +86,13 @@ def main():
     df = pd.read_csv(ROOT / "data" / "energy_speeches.csv", dtype={"period": str})
     docs = df["text"].astype(str).tolist()
     toks = [tokens(t) for t in docs]
-    results = [run(m, docs, toks) for m in MODELS]
+    import sys
+    todo = sys.argv[1:] or MODELS  # optional: run only the named models and merge into the existing report
+    results = [run(m, docs, toks) for m in todo]
+    path = ROOT / "reports" / "gbert_topics.json"
+    if sys.argv[1:] and path.exists():
+        old = json.loads(path.read_text(encoding="utf-8"))["results"]
+        results = [r for r in old if r["model"] not in todo] + results
     out = {"n_speeches": len(docs), "seed": SEED, "results": results,
            "note": "same UMAP, HDBSCAN, tokenizer and coherence measure for both models; only the embedding differs"}
     (ROOT / "reports" / "gbert_topics.json").write_text(json.dumps(out, indent=2, ensure_ascii=False), encoding="utf-8")

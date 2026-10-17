@@ -157,6 +157,34 @@
           "beratung"
         ]
       }
+    },
+    {
+      "model": "deutsche-telekom/gbert-large-paraphrase-cosine",
+      "n_topics": 2,
+      "outlier_share": 0.0,
+      "coherence_c_v": 0.67,
+      "topics": {
+        "0": [
+          "eine",
+          "ein",
+          "mssen",
+          "einen",
+          "deutschland",
+          "knnen",
+          "ber",
+          "euro"
+        ],
+        "1": [
+          "drucksache",
+          "ausschuss",
+          "fraktion",
+          "beschlussempfehlung",
+          "wer",
+          "abgeordneten",
+          "beratung",
+          "stimmt"
+        ]
+      }
     }
   ],
   "note": "same UMAP, HDBSCAN, tokenizer and coherence measure for both models; only the embedding differs"
