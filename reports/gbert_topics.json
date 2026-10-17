@@ -162,7 +162,7 @@
       "model": "deutsche-telekom/gbert-large-paraphrase-cosine",
       "n_topics": 2,
       "outlier_share": 0.0,
-      "coherence_c_v": 0.67,
+      "coherence_c_v": 0.614,
       "topics": {
         "0": [
           "eine",
