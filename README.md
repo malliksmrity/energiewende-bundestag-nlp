@@ -24,17 +24,17 @@ Who could use it: journalists, policy researchers, government-affairs teams (pla
 3. Test whether the changes are real: resample whole sessions (speeches in one session are not independent) to get a 95 percent range.
 4. Find topics with two methods: LDA (counts words) and BERTopic (sentence embeddings), and compare them with a coherence score.
 5. Predict the speaker's party from the words, and test it in three stricter ways (random split, whole sessions held out, train on the past and test on period 19).
-6. Test a German language model (GBERT) against the multilingual one for the topics.
+6. Test two German models (GBERT and a German sentence model) against the multilingual one for the topics.
 
 ## 4. Findings
 
 Share of energy speeches mentioning each theme, with the change from period 17 to 19 (95 percent range from resampling whole sessions):
 
-| Theme | Period 17 (2009-13) | 18 (2013-17) | 19 (2017-21) | Change 17→19, points | Clear? |
+| Theme | Period 17 (2009-13) | 18 (2013-17) | 19 (2017-21) | Change 17â†’19, points | Clear? |
 |---|---|---|---|---|---|
-| Nuclear | 31.8 % | 26.7 % | 9.9 % | −21.9 (−37.1 to −6.7) | yes |
-| Renewables | 44.4 % | 40.7 % | 29.8 % | −14.6 (−28.3 to −0.8) | borderline |
-| Coal | 4.8 % | 15.0 % | 10.2 % | +5.4 (−0.6 to +10.9) | no |
+| Nuclear | 31.8 % | 26.7 % | 9.9 % | âˆ’21.9 (âˆ’37.1 to âˆ’6.7) | yes |
+| Renewables | 44.4 % | 40.7 % | 29.8 % | âˆ’14.6 (âˆ’28.3 to âˆ’0.8) | borderline |
+| Coal | 4.8 % | 15.0 % | 10.2 % | +5.4 (âˆ’0.6 to +10.9) | no |
 | Hydrogen | 2.5 % | 3.1 % | 13.7 % | +11.2 (+4.7 to +18.5) | yes |
 | Climate protection | 38.9 % | 47.6 % | 57.8 % | +18.9 (+0.6 to +36.7) | borderline |
 
@@ -64,8 +64,9 @@ Evaluation:
 |---|---|---|---|
 | multilingual MiniLM (notebook's choice) | 12 | 34.5 % | 0.523 |
 | GBERT (German BERT) | 2 | 0 % | 0.614 |
+| German sentence model (gbert-large-paraphrase-cosine) | 2 | 0 % | 0.670 |
 
-GBERT's higher score is misleading: its two topics are generic words ("eine", "Deutschland", "Euro") and procedural words ("Drucksache", "Ausschuss"). GBERT is a plain language model, not trained to compare sentences. A German sentence-embedding model is the fairer next test. These coherence values use a simpler tokenizer than the notebook's (LDA 0.374, BERTopic 0.397 there), so the two sets are not comparable.
+The higher scores of both German models are misleading: each finds only two topics, one of generic words ("eine", "Deutschland", "Euro") and one of procedural words ("Drucksache", "Ausschuss"). I also tested a German model trained for sentence similarity (deutsche-telekom/gbert-large-paraphrase-cosine, first 256 tokens of each speech): it gave the same two topics (coherence 0.670), so the sentence training did not help here. Long, formal speeches that share the same parliamentary vocabulary appear to cluster into one blob; the multilingual MiniLM model separated 12 readable topics (EEG, forest and sustainability, budget, Europe). Choosing the model by coherence alone would have picked the worse result. Next ideas: split speeches into paragraphs before embedding, or tune the clustering size. These coherence values use a simpler tokenizer than the notebook's (LDA 0.374, BERTopic 0.397 there), so the two sets are not comparable.
 
 **NLP tooling and what I did not use**
 
