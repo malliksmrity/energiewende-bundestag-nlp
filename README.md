@@ -53,12 +53,4 @@ The German models score higher on coherence but find only two generic topics (fu
 - Party labels are uneven (385 CDU/CSU speeches, 43 AfD).
 - Coursework (module M508, Gisma), extended afterwards.
 
-## 7. Deployment
-| Item | Status |
-|---|---|
-| Static page (GitHub Pages, `/docs`) | live |
-| Hugging Face static Space (runs in the browser) | live |
-| CI (GitHub Actions) | passing |
-
-Smrity Mallik, MSc AI and Data Science (Gisma, Berlin), B.Eng. Mechanical Engineering.
 
